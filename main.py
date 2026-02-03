@@ -31,7 +31,7 @@ def Relu(Z):
 
 def softmax(Z):
     exp_Z = np.exp(Z - np.max(Z, axis=0, keepdims=True))
-    return exp_Z / np.sum(np.exp(Z), axis=0, keepdims=True)
+    return exp_Z / np.sum(exp_Z, axis=0, keepdims=True)
 
 # Forward propagation to compute activations
 def forward_prop(W1,b1,W2,b2,X):
