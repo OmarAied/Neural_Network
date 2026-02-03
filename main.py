@@ -33,10 +33,31 @@ def softmax(Z):
     return np.exp(Z) / np.sum(np.exp(Z))
 
 # Forward propagation
-def forward_prop(w1,b1,w2,b2,X):
-    Z1 = w1.dot(X) + b1
+def forward_prop(W1,b1,W2,b2,X):
+    Z1 = W1.dot(X) + b1
     A1 = Relu(Z1)
-    Z2 = w2.dot(A1) + b2
+    Z2 = W2.dot(A1) + b2
     A2 = softmax(Z2)
     return Z1, A1, Z2, A2
 
+# One-hot encoding
+def one_hot(Y):
+    one_hot_Y = np.zeros((Y.size, Y.max() + 1))
+    one_hot_Y[np.arange(Y.size), Y] = 1
+    one_hot_Y = one_hot_Y.T
+    return one_hot_Y
+
+# Derivative of ReLU
+def deriv_relu(Z):
+    return Z > 0
+
+# Backward propagation
+def back_prop(Z1, A1, Z2, A2, W2, X, Y):
+    one_hot_Y = one_hot(Y)
+    dZ2 = A2 - one_hot_Y
+    dW2 = (1 / Y.size) * dZ2.dot(A1.T)
+    db2 = (1 / Y.size) * np.sum(dZ2,2)
+    dZ1 = W2.T.dot(dZ2) * deriv_relu(Z1)
+    dW1 = (1 / Y.size) * dZ1.dot(X.T)
+    db1 = (1 / Y.size) * np.sum(dZ1,2)
+    return dW1, db1, dW2, db2
