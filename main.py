@@ -17,12 +17,12 @@ data_train = data[1000:m].T
 Y_train = data_train[0]
 X_train = data_train[1:n]
 
-# Normalize the input data
+# Normalize the initial weights and biases using He initialization
 def init_params():
-    W1 = np.random.rand(10, 784) - 0.5
-    b1 = np.random.rand(10, 1) - 0.5
-    W2 = np.random.rand(10, 10) - 0.5
-    b2 = np.random.rand(10, 1) - 0.5
+    W1 = np.random.rand(10, 784) * np.sqrt(2.0 / 784)
+    b1 = np.zeros((10, 1))
+    W2 = np.random.rand(10, 10) * np.sqrt(2.0 / 10)
+    b2 = np.zeros((10, 1))
     return W1, b1, W2, b2
 
 # Activation functions
@@ -32,7 +32,7 @@ def Relu(Z):
 def softmax(Z):
     return np.exp(Z) / np.sum(np.exp(Z))
 
-# Forward propagation
+# Forward propagation to compute activations
 def forward_prop(W1,b1,W2,b2,X):
     Z1 = W1.dot(X) + b1
     A1 = Relu(Z1)
@@ -40,18 +40,18 @@ def forward_prop(W1,b1,W2,b2,X):
     A2 = softmax(Z2)
     return Z1, A1, Z2, A2
 
-# One-hot encoding
+# One-hot encoding of labels
 def one_hot(Y):
     one_hot_Y = np.zeros((Y.size, Y.max() + 1))
     one_hot_Y[np.arange(Y.size), Y] = 1
     one_hot_Y = one_hot_Y.T
     return one_hot_Y
 
-# Derivative of ReLU
+# Derivative of ReLU activation
 def deriv_relu(Z):
     return Z > 0
 
-# Backward propagation
+# Backward propagation to compute gradients
 def back_prop(Z1, A1, Z2, A2, W2, X, Y):
     one_hot_Y = one_hot(Y)
     dZ2 = A2 - one_hot_Y
@@ -62,10 +62,11 @@ def back_prop(Z1, A1, Z2, A2, W2, X, Y):
     db1 = (1 / Y.size) * np.sum(dZ1,2)
     return dW1, db1, dW2, db2
 
-# Update parameters
+# Update weight and bias parameters
 def update_params(W1, b1, W2, b2, dW1, db1, dW2, db2, learning_rate):
     W1 -= learning_rate * dW1
     b1 -= learning_rate * db1
     W2 -= learning_rate * dW2
     b2 -= learning_rate * db2
     return W1, b1, W2, b2
+
