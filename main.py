@@ -11,17 +11,17 @@ np.random.shuffle(data)
 # Split the dataset into development and training sets
 data_dev = data[0:1000].T
 Y_dev = data_dev[0]
-X_dev = data_dev[1:n]
+X_dev = data_dev[1:n] / 255.0
 
 data_train = data[1000:m].T
 Y_train = data_train[0]
-X_train = data_train[1:n]
+X_train = data_train[1:n] / 255.0
 
 # Normalize the initial weights and biases using He initialization
 def init_params():
-    W1 = np.random.rand(10, 784) * np.sqrt(2.0 / 784)
+    W1 = np.random.randn(10, 784) * np.sqrt(2.0 / 784)
     b1 = np.zeros((10, 1))
-    W2 = np.random.rand(10, 10) * np.sqrt(2.0 / 10)
+    W2 = np.random.randn(10, 10) * np.sqrt(2.0 / 10)
     b2 = np.zeros((10, 1))
     return W1, b1, W2, b2
 
@@ -30,7 +30,8 @@ def Relu(Z):
     return np.maximum(0, Z)
 
 def softmax(Z):
-    return np.exp(Z) / np.sum(np.exp(Z))
+    exp_Z = np.exp(Z - np.max(Z, axis=0, keepdims=True))
+    return exp_Z / np.sum(np.exp(Z), axis=0, keepdims=True)
 
 # Forward propagation to compute activations
 def forward_prop(W1,b1,W2,b2,X):
@@ -56,10 +57,10 @@ def back_prop(Z1, A1, Z2, A2, W2, X, Y):
     one_hot_Y = one_hot(Y)
     dZ2 = A2 - one_hot_Y
     dW2 = (1 / Y.size) * dZ2.dot(A1.T)
-    db2 = (1 / Y.size) * np.sum(dZ2,2)
+    db2 = (1 / Y.size) * np.sum(dZ2, axis=1, keepdims=True)
     dZ1 = W2.T.dot(dZ2) * deriv_relu(Z1)
     dW1 = (1 / Y.size) * dZ1.dot(X.T)
-    db1 = (1 / Y.size) * np.sum(dZ1,2)
+    db1 = (1 / Y.size) * np.sum(dZ1, axis=1, keepdims=True)
     return dW1, db1, dW2, db2
 
 # Update weight and bias parameters
@@ -78,7 +79,7 @@ def get_predictions(A2):
 def get_accuracy(predictions, Y):
     return np.sum(predictions == Y) / Y.size
 
-
+# Gradient descent to train the model
 def gradient_descent(X, Y, iterations, learning_rate):
     W1, b1, W2, b2 = init_params()
     for i in range(iterations):
@@ -89,3 +90,13 @@ def gradient_descent(X, Y, iterations, learning_rate):
             print("Iteration: ", i)
             print("Accuracy: ", get_accuracy(get_predictions(A2), Y))
     return W1, b1, W2, b2
+
+# Train the model
+print("Training the model...")
+W1, b1, W2, b2 = gradient_descent(X_train, Y_train, 500, 0.1)
+
+# Evaluate the model on the development set
+print("Evaluating on development set...")
+Z1_dev, A1_dev, Z2_dev, A2_dev = forward_prop(W1, b1, W2, b2, X_dev)
+dev_accuracy = get_accuracy(get_predictions(A2_dev), Y_dev)
+print("Development set accuracy: ", dev_accuracy)
