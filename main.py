@@ -70,3 +70,22 @@ def update_params(W1, b1, W2, b2, dW1, db1, dW2, db2, learning_rate):
     b2 -= learning_rate * db2
     return W1, b1, W2, b2
 
+# Get predictions from output activations
+def get_predictions(A2):
+    return np.argmax(A2, 0)
+
+# Calculate accuracy of predictions
+def get_accuracy(predictions, Y):
+    return np.sum(predictions == Y) / Y.size
+
+
+def gradient_descent(X, Y, iterations, learning_rate):
+    W1, b1, W2, b2 = init_params()
+    for i in range(iterations):
+        Z1, A1, Z2, A2 = forward_prop(W1, b1, W2, b2, X)
+        dW1, db1, dW2, db2 = back_prop(Z1, A1, Z2, A2, W2, X, Y)
+        W1, b1, W2, b2 = update_params(W1, b1, W2, b2, dW1, db1, dW2, db2, learning_rate)
+        if i % 50 == 0:
+            print("Iteration: ", i)
+            print("Accuracy: ", get_accuracy(get_predictions(A2), Y))
+    return W1, b1, W2, b2
