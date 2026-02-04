@@ -38,3 +38,34 @@ def load_model(filename='trained_model.pkl'):
         params = pickle.load(f)
     return params['w1'], params['b1'], params['w2'], params['b2'], params['w3'], params['b3']
 
+# Test the model on test data
+def make_prediction(test_data):
+    w1, b1, w2, b2, w3, b3 = load_model()
+    test_data = pd.read_csv('mnist_test.csv')
+    test_data = np.array(test_data)
+    X_test = test_data[:,1:].T / 255.0
+    Y_test = test_data[:,0]
+    Z1, A1, Z2, A2, Z3, A3 = forward_prop(w1, b1, w2, b2, w3, b3, X_test)
+    predictions = get_predictions(A3)
+    return predictions
+
+def test_prediction(index, test_data_path='mnist_test.csv'):
+    predictions = make_prediction(test_data_path)
+    test_data = pd.read_csv(test_data_path)
+    test_data = np.array(test_data)
+    true_label = test_data[index,0]
+    prediction = predictions[index]
+    image_data = test_data[index,1:].reshape(28,28)
+
+    plt.figure(figsize=(3, 3))
+    plt.imshow(image_data, cmap='gray')
+    plt.title(f'True: {true_label}, Pred: {prediction}')
+    plt.axis('off')
+    plt.show()
+
+    print(f'True Label: {true_label}')
+    print(f'Predicted Label: {prediction}')
+    return true_label, prediction
+
+index = np.random.randint(0,10000)
+test_prediction(index)
