@@ -83,6 +83,22 @@ test_prediction(index=100)          # Test sample 100
 from test_model import make_prediction
 predictions = make_prediction()
 ```
+### Interesting examples
+<img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/2ee624f1-e700-4934-8e7b-eefcbedbe335" />
+<img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/043f1e7b-6d14-4fae-97ce-8a40b05a3e8d" />
+<img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/e4940ab2-b75a-46eb-9a1d-83bd5daad551" />
+<img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/0eef410b-94c8-4423-bf85-6f2c674be623" />
+<img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/c77aa154-c18d-4aaa-b7da-2bd5bb2a6e61" />
+<img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/037c6800-7ae5-4dc1-9ab6-1c525f841468" />
+<img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/87f0fc47-a48c-45f2-8c9d-e66be98a74bf" />
+<img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/c0b9bec7-360c-40e8-998a-bdd712ccc243" />
+
+
+
+
+
+
+
 
 ## 📈 Performance
 
