@@ -1,21 +1,8 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import pickle
 
-# Load the MNIST dataset
-data = pd.read_csv('mnist_train.csv')
-data = np.array(data)
-m,n = data.shape
-np.random.shuffle(data)
-
-# Split the dataset into development and training sets
-data_dev = data[0:1000].T
-Y_dev = data_dev[0]
-X_dev = data_dev[1:n] / 255.0
-
-data_train = data[1000:m].T
-Y_train = data_train[0]
-X_train = data_train[1:n] / 255.0
 
 # Normalize the initial weights and biases using He initialization
 def init_params():
@@ -53,7 +40,7 @@ def forward_prop(w1,b1,w2,b2,w3,b3,X):
 
 # One-hot encoding of labels
 def one_hot(Y):
-    one_hot_Y = np.zeros((Y.size, Y.max() + 1)) #May need to change to 10
+    one_hot_Y = np.zeros((Y.size, Y.max() + 1))
     one_hot_Y[np.arange(Y.size), Y] = 1
     one_hot_Y = one_hot_Y.T
     return one_hot_Y
@@ -112,12 +99,48 @@ def gradient_descent(X, Y, iterations, learning_rate):
             print("Accuracy: ", get_accuracy(get_predictions(A3), Y))
     return w1, b1, w2, b2, w3, b3
 
-# Train the model
-print("Training the model...")
-w1, b1, w2, b2, w3, b3 = gradient_descent(X_train, Y_train, 500, 0.1)
 
-# Evaluate the model on the development set
-print("Evaluating on development set...")
-Z1_dev, A1_dev, Z2_dev, A2_dev, Z3_dev, A3_dev = forward_prop(w1, b1, w2, b2, w3, b3, X_dev)
-dev_accuracy = get_accuracy(get_predictions(A3_dev), Y_dev)
-print("Development set accuracy: ", dev_accuracy)
+def save_model(w1, b1, w2, b2, w3, b3, filename='trained_model.pkl'):
+    trained_params = {
+        'w1': w1, 'b1': b1,
+        'w2': w2, 'b2': b2,
+        'w3': w3, 'b3': b3
+    }
+    with open(filename, 'wb') as f:
+        pickle.dump(trained_params, f)
+    print(f"Model saved to '{filename}'")
+    return trained_params
+
+def train_and_save_model():
+    # Load the MNIST dataset
+    data = pd.read_csv('mnist_train.csv')
+    data = np.array(data)
+    m,n = data.shape
+    np.random.shuffle(data)
+
+    # Split the dataset into development and training sets
+    data_dev = data[0:1000].T
+    Y_dev = data_dev[0]
+    X_dev = data_dev[1:n] / 255.0
+
+    data_train = data[1000:m].T
+    Y_train = data_train[0]
+    X_train = data_train[1:n] / 255.0
+
+    # Train the model
+    print("Training the model...")
+    w1, b1, w2, b2, w3, b3 = gradient_descent(X_train, Y_train, 500, 0.1)
+
+    # Evaluate the model on the development set
+    print("Evaluating on development set...")
+    Z1_dev, A1_dev, Z2_dev, A2_dev, Z3_dev, A3_dev = forward_prop(w1, b1, w2, b2, w3, b3, X_dev)
+    dev_accuracy = get_accuracy(get_predictions(A3_dev), Y_dev)
+    print("Development set accuracy: ", dev_accuracy)
+
+    # Save the trained model
+    save_model(w1, b1, w2, b2, w3, b3)
+
+    return w1, b1, w2, b2, w3, b3
+
+if __name__ == "__main__":
+    train_and_save_model()
